@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Kinufaktur AI Chief of Staff{% endblock %}</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; }
+    body { margin: 0; background: #f4f5f7; color: #20242a; }
+    header { background: #17202a; color: white; padding: 1rem max(1rem, calc((100% - 880px) / 2)); }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    nav a { color: white; text-decoration: none; }
+    main { max-width: 880px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: white; border: 1px solid #dde1e6; border-radius: 10px; margin: 1rem 0; padding: 1.25rem; }
+    .button, button { display: inline-block; background: #176b5b; border: 0; border-radius: 6px; color: white; cursor: pointer; padding: .65rem 1rem; text-decoration: none; }
+    .button.secondary { background: #485563; }
+    label { display: block; font-weight: 600; margin-top: 1rem; }
+    input, select, textarea { box-sizing: border-box; display: block; font: inherit; margin-top: .35rem; padding: .65rem; width: 100%; }
+    .errorlist { color: #a52121; }
+    .meta { color: #606a75; font-size: .9rem; }
+    .empty { color: #606a75; padding: 2rem 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="{% url 'requests_app:list' %}"><strong>Kinufaktur AI Chief of Staff</strong></a>
+      <a class="button" href="{% url 'requests_app:create' %}">New request</a>
+    </nav>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>

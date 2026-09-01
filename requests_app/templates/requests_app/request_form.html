@@ -1,0 +1,12 @@
+{% extends "requests_app/base.html" %}
+
+{% block title %}New business request{% endblock %}
+
+{% block content %}
+  <h1>New business request</h1>
+  <form class="card" method="post">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <p><button type="submit">Create request</button></p>
+  </form>
+{% endblock %}

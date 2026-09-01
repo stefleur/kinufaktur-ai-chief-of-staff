@@ -1,0 +1,16 @@
+{% extends "requests_app/base.html" %}
+
+{% block title %}Business requests{% endblock %}
+
+{% block content %}
+  <h1>Business requests</h1>
+  {% for item in business_requests %}
+    <article class="card">
+      <h2><a href="{% url 'requests_app:detail' item.pk %}">{{ item.title }}</a></h2>
+      <p>{{ item.description|truncatewords:30 }}</p>
+      <p class="meta">{{ item.get_category_display }} · {{ item.get_status_display }}</p>
+    </article>
+  {% empty %}
+    <p class="empty">No business requests yet. Create the first one.</p>
+  {% endfor %}
+{% endblock %}
