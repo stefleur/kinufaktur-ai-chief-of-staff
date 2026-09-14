@@ -1,7 +1,17 @@
 # KinuFlow backend
 
-This directory contains the FastAPI backend for KinuFlow. It currently uses a
-replaceable in-memory task store; no database is configured.
+This directory contains the FastAPI backend for KinuFlow. Persistence is kept
+behind a SQLAlchemy data-access layer.
+
+By default, local data is stored in `kinuflow.db` inside this directory. To use
+another SQLAlchemy-compatible database URL, set `KINUFLOW_DATABASE_URL` before
+starting the server:
+
+```bash
+export KINUFLOW_DATABASE_URL="sqlite:///./kinuflow.db"
+```
+
+The required tables are created when the application starts.
 
 ## Install
 

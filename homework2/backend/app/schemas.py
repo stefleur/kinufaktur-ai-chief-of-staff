@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class TaskCategory(str, Enum):
@@ -54,9 +54,18 @@ class TaskUpdate(BaseModel):
 
 
 class Task(TaskCreate):
+    model_config = ConfigDict(extra="forbid", from_attributes=True)
+
     id: str
     created_at: datetime
     updated_at: datetime
+
+    @field_validator("created_at", "updated_at", mode="before")
+    @classmethod
+    def ensure_utc_timezone(cls, value):
+        if isinstance(value, datetime) and value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value
 
 
 class TaskDeleteResponse(BaseModel):

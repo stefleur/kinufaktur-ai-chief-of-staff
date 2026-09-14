@@ -2,9 +2,12 @@ from datetime import datetime
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
-from app.main import app
-from app.store import task_store
+from app.database import Base, get_db
+from app.main import create_app
 
 
 TASK_INPUT = {
@@ -16,17 +19,28 @@ TASK_INPUT = {
 }
 
 
-@pytest.fixture(autouse=True)
-def clear_task_store():
-    task_store.clear()
-    yield
-    task_store.clear()
-
-
 @pytest.fixture
 def client():
-    with TestClient(app) as test_client:
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    test_session = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+    Base.metadata.create_all(bind=engine)
+
+    def override_get_db():
+        with test_session() as session:
+            yield session
+
+    test_app = create_app(initialize_database=False)
+    test_app.dependency_overrides[get_db] = override_get_db
+
+    with TestClient(test_app) as test_client:
         yield test_client
+
+    Base.metadata.drop_all(bind=engine)
+    engine.dispose()
 
 
 def create_task(client, **changes):
@@ -34,6 +48,13 @@ def create_task(client, **changes):
     response = client.post("/tasks", json=payload)
     assert response.status_code == 201
     return response.json()
+
+
+def test_list_tasks_starts_with_isolated_empty_database(client):
+    response = client.get("/tasks")
+
+    assert response.status_code == 200
+    assert response.json() == []
 
 
 def test_list_tasks_returns_all_tasks(client):

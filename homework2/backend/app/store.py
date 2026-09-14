@@ -1,52 +1,78 @@
 from datetime import datetime, timezone
+from typing import Protocol
 from uuid import uuid4
 
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from .models import TaskRecord
 from .schemas import Task, TaskCreate, TaskUpdate
 
 
-class InMemoryTaskStore:
-    """Small replaceable data-access layer for the prototype."""
+class TaskStore(Protocol):
+    def list(self) -> list[Task]: ...
 
-    def __init__(self):
-        self._tasks: dict[str, Task] = {}
+    def get(self, task_id: str) -> Task | None: ...
 
-    def clear(self) -> None:
-        self._tasks.clear()
+    def create(self, task_input: TaskCreate) -> Task: ...
+
+    def update(self, task_id: str, changes: TaskUpdate) -> Task | None: ...
+
+    def delete(self, task_id: str) -> bool: ...
+
+
+class SqlAlchemyTaskStore:
+    """SQLAlchemy-backed data-access layer for KinuFlow tasks."""
+
+    def __init__(self, session: Session):
+        self.session = session
+
+    @staticmethod
+    def _to_task(record: TaskRecord) -> Task:
+        return Task.model_validate(record)
 
     def list(self) -> list[Task]:
-        return [task.model_copy(deep=True) for task in self._tasks.values()]
+        statement = select(TaskRecord).order_by(TaskRecord.created_at.desc())
+        records = self.session.scalars(statement).all()
+        return [self._to_task(record) for record in records]
 
     def get(self, task_id: str) -> Task | None:
-        task = self._tasks.get(task_id)
-        return task.model_copy(deep=True) if task else None
+        record = self.session.get(TaskRecord, task_id)
+        return self._to_task(record) if record else None
 
     def create(self, task_input: TaskCreate) -> Task:
         timestamp = datetime.now(timezone.utc)
-        task = Task(
+        record = TaskRecord(
             id=str(uuid4()),
-            **task_input.model_dump(),
+            **task_input.model_dump(mode="json"),
             created_at=timestamp,
             updated_at=timestamp,
         )
-        self._tasks[task.id] = task
-        return task.model_copy(deep=True)
+        self.session.add(record)
+        self.session.commit()
+        self.session.refresh(record)
+        return self._to_task(record)
 
     def update(self, task_id: str, changes: TaskUpdate) -> Task | None:
-        current_task = self._tasks.get(task_id)
-        if current_task is None:
+        record = self.session.get(TaskRecord, task_id)
+        if record is None:
             return None
 
-        updated_task = current_task.model_copy(
-            update={
-                **changes.model_dump(exclude_unset=True),
-                "updated_at": datetime.now(timezone.utc),
-            }
-        )
-        self._tasks[task_id] = updated_task
-        return updated_task.model_copy(deep=True)
+        for field, value in changes.model_dump(
+            mode="json", exclude_unset=True
+        ).items():
+            setattr(record, field, value)
+        record.updated_at = datetime.now(timezone.utc)
+
+        self.session.commit()
+        self.session.refresh(record)
+        return self._to_task(record)
 
     def delete(self, task_id: str) -> bool:
-        return self._tasks.pop(task_id, None) is not None
+        record = self.session.get(TaskRecord, task_id)
+        if record is None:
+            return False
 
-
-task_store = InMemoryTaskStore()
+        self.session.delete(record)
+        self.session.commit()
+        return True
