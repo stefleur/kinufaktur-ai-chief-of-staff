@@ -27,7 +27,11 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Setup uv (tool runner)
-        uses: astral-sh/setup-uv@v1
+        uses: astral-sh/setup-uv@v10
+        with:
+          version: '0.9.0'
+      - name: Show uv version
+        run: uv --version
 
       - name: Install backend dependencies (uv sync)
         working-directory: homework2/backend
@@ -58,7 +62,11 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Setup uv (tool runner)
-        uses: astral-sh/setup-uv@v1
+        uses: astral-sh/setup-uv@v10
+        with:
+          version: '0.9.0'
+      - name: Show uv version
+        run: uv --version
 
       - name: Install backend dependencies (uv sync)
         working-directory: homework2/backend
