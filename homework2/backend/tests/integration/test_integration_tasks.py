@@ -26,6 +26,10 @@ def create_task(client, **changes):
     return response.json()
 
 
+import pytest
+
+
+@pytest.mark.integration
 def test_full_task_lifecycle_uses_real_persistence():
     # Use a dedicated in-memory SQLite engine with StaticPool so the
     # TestClient (which runs the app in a different thread) can reuse
