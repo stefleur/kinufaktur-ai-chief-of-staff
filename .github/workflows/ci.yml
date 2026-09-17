@@ -31,7 +31,7 @@ jobs:
 
       - name: Install backend dependencies (uv sync)
         working-directory: homework2/backend
-        run: uv sync
+        run: uv sync --group dev
 
       - name: Run non-integration tests
         working-directory: homework2/backend
@@ -62,7 +62,7 @@ jobs:
 
       - name: Install backend dependencies (uv sync)
         working-directory: homework2/backend
-        run: uv sync
+        run: uv sync --group dev
 
       - name: Run integration tests
         working-directory: homework2/backend
