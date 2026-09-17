@@ -46,3 +46,51 @@ Notes and recommendations
 -------------------------
 - The integration tests intentionally avoid network or containerized DBs to keep CI fast. If you later add Postgres or other DB-backed integration tests, isolate them behind pytest markers and CI configuration.
 - Keep tests small and deterministic; use `StaticPool` for in-memory SQLite when the FastAPI app runs in a different thread.
+
+CI
+--
+The repository includes a GitHub Actions workflow at `.github/workflows/ci.yml` which runs on pushes and pull requests to `main`.
+
+What CI checks
+- Backend non-integration tests: installs Python dependencies and runs `uv run pytest -m "not integration"` (fast unit-style checks).
+- Backend integration tests: installs Python dependencies and runs `uv run pytest -m integration` (isolated, deterministic integration tests using in-memory SQLite).
+- Frontend verification: runs `npm ci` and `npm run build`. If a `lint` npm script exists it will be invoked.
+- Container verification: builds the backend and frontend Docker images and validates the `docker-compose.yml` with `docker compose config`.
+
+When CI runs
+- On `push` to `main` and on `pull_request` targeting `main`.
+
+Corresponding commands (local equivalents)
+- Backend non-integration tests:
+
+```bash
+cd agent1/homework2/backend
+uv run pytest -m "not integration"
+```
+
+- Backend integration tests:
+
+```bash
+cd agent1/homework2/backend
+uv run pytest -m integration
+```
+
+- Frontend verification:
+
+```bash
+cd agent1/homework2/frontend
+npm ci
+npm run build
+```
+
+- Container verification (local equivalent):
+
+```bash
+cd agent1/homework2
+docker build -f backend/Dockerfile -t ci/homework2-backend:latest backend
+docker build -f frontend/Dockerfile -t ci/homework2-frontend:latest frontend
+docker compose config
+```
+
+Why CI must stop on required failures
+- The workflow treats all checks as required; if unit tests, integration tests, build, or container verification fail, the change cannot be merged. This prevents regressions and ensures the build is reproducible in the same way CI runs it.
