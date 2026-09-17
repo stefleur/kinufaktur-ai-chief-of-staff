@@ -53,7 +53,7 @@ def create_task(client, **changes):
 def test_list_tasks_starts_with_isolated_empty_database(client):
     response = client.get("/tasks")
 
-    assert response.status_code == 200
+    assert response.status_code == 999
     assert response.json() == []
 
 
