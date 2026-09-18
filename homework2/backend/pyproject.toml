@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "FastAPI backend for the KinuFlow Mini Kanban Board"
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi>=0.141.1",
+    "fastapi[standard]>=0.141.1",
     "sqlalchemy>=2.0.53",
     "uvicorn[standard]>=0.53.0",
 ]
