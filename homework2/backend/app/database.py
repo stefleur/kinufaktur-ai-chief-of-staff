@@ -11,7 +11,28 @@ DEFAULT_DATABASE_URL = "sqlite:///./kinuflow.db"
 # Prefer a standard `DATABASE_URL` (as provided by many PaaS providers);
 # fall back to the project-specific `KINUFLOW_DATABASE_URL` and then to
 # the local SQLite default.
-DATABASE_URL = os.getenv("DATABASE_URL", os.getenv("KINUFLOW_DATABASE_URL", DEFAULT_DATABASE_URL))
+_raw_db = os.getenv("DATABASE_URL", os.getenv("KINUFLOW_DATABASE_URL", DEFAULT_DATABASE_URL))
+
+# Normalize common Postgres URL forms to use the modern psycopg 3 SQLAlchemy
+# dialect when the URL comes from providers like Neon. Do not alter URLs that
+# already specify a driver (contain a `+`), and preserve sqlite local dev.
+def _normalize_database_url(raw: str) -> str:
+    if not raw:
+        return raw
+    # If it's sqlite, leave as-is
+    if raw.startswith("sqlite"):
+        return raw
+    # If a driver is already specified (postgresql+psycopg:// or similar), keep it
+    if "+" in raw.split(":", 1)[0]:
+        return raw
+    # Handle the common provider prefixes
+    if raw.startswith("postgresql://"):
+        return raw.replace("postgresql://", "postgresql+psycopg://", 1)
+    if raw.startswith("postgres://"):
+        return raw.replace("postgres://", "postgresql+psycopg://", 1)
+    return raw
+
+DATABASE_URL = _normalize_database_url(_raw_db)
 
 
 class Base(DeclarativeBase):
