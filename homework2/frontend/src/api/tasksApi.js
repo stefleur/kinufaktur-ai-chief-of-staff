@@ -1,4 +1,13 @@
-export const API_BASE_URL = (import.meta.env?.VITE_API_BASE) || "http://localhost:8000";
+// Resolution order:
+// 1. `VITE_API_BASE_URL` (preferred repository/CI variable)
+// 2. `VITE_API_BASE` (existing variable for compatibility)
+// 3. Local dev: `http://localhost:8000` when running vite in dev mode
+// 4. Production default: live FastAPI backend URL (used when no build-time var set)
+const PROD_DEFAULT = "https://kinufaktur-ai-chief-of-staff-89a42968.fastapicloud.dev";
+export const API_BASE_URL =
+  import.meta.env?.VITE_API_BASE_URL ||
+  import.meta.env?.VITE_API_BASE ||
+  (import.meta.env.DEV ? "http://localhost:8000" : PROD_DEFAULT);
 
 async function request(path, options = {}) {
   let response;
