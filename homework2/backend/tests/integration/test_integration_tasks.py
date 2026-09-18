@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import pytest
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -24,9 +26,6 @@ def create_task(client, **changes):
     response = client.post("/tasks", json=payload)
     assert response.status_code == 201
     return response.json()
-
-
-import pytest
 
 
 @pytest.mark.integration

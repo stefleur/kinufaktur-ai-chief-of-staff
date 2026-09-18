@@ -29,6 +29,9 @@ EXPOSE 8000
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 # Use curl for a simple HTTP healthcheck.
-HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl -f http://127.0.0.1:8000/tasks || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl -f http://127.0.0.1:${PORT:-8000}/tasks || exit 1
 
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use the PORT environment variable when provided by the hosting platform
+# (Render sets `PORT`). Fall back to 8000 for local development and
+# Docker Compose.
+CMD ["sh", "-c", "python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
