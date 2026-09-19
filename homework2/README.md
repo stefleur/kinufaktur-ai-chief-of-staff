@@ -68,3 +68,21 @@ Local URLs:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8000
 
+## Production
+
+- Frontend: [https://stefleur.github.io/kinufaktur-ai-chief-of-staff/](https://stefleur.github.io/kinufaktur-ai-chief-of-staff/)
+- Backend API documentation: [https://kinufaktur-ai-chief-of-staff-89a42968.fastapicloud.dev/docs](https://kinufaktur-ai-chief-of-staff-89a42968.fastapicloud.dev/docs)
+
+The production architecture is a React frontend hosted on GitHub Pages, a FastAPI backend hosted on FastAPI Cloud, and a Neon PostgreSQL database:
+
+```text
+GitHub Pages -> FastAPI Cloud -> Neon PostgreSQL
+```
+
+GitHub Actions runs CI through `.github/workflows/ci.yml`. Changes on `main` automatically deploy the frontend through `.github/workflows/deploy.yml`, while FastAPI Cloud's GitHub integration automatically deploys backend changes.
+
+## Documentation
+
+- [Testing](docs/testing.md)
+- [Production deployment](docs/deployment.md)
+- [Release process](docs/release-process.md)
