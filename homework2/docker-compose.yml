@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: kinuflow
+      POSTGRES_PASSWORD: kinuflow_pass
+      POSTGRES_DB: kinuflow
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kinuflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      KINUFLOW_DATABASE_URL: "postgresql+psycopg://kinuflow:kinuflow_pass@postgres:5432/kinuflow"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys
+try:\n  r=urllib.request.urlopen('http://127.0.0.1:8000/tasks')\n  sys.exit(0 if r.status==200 else 1)\nexcept Exception:\n  sys.exit(1)\""]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    environment:
+      VITE_API_BASE: "http://localhost:8000"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:

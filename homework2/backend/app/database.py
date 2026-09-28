@@ -5,8 +5,34 @@ from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 
+# Default to a local SQLite file for development. In production (Render)
+# a proper Postgres `DATABASE_URL` environment variable should be set.
 DEFAULT_DATABASE_URL = "sqlite:///./kinuflow.db"
-DATABASE_URL = os.getenv("KINUFLOW_DATABASE_URL", DEFAULT_DATABASE_URL)
+# Prefer a standard `DATABASE_URL` (as provided by many PaaS providers);
+# fall back to the project-specific `KINUFLOW_DATABASE_URL` and then to
+# the local SQLite default.
+_raw_db = os.getenv("DATABASE_URL", os.getenv("KINUFLOW_DATABASE_URL", DEFAULT_DATABASE_URL))
+
+# Normalize common Postgres URL forms to use the modern psycopg 3 SQLAlchemy
+# dialect when the URL comes from providers like Neon. Do not alter URLs that
+# already specify a driver (contain a `+`), and preserve sqlite local dev.
+def _normalize_database_url(raw: str) -> str:
+    if not raw:
+        return raw
+    # If it's sqlite, leave as-is
+    if raw.startswith("sqlite"):
+        return raw
+    # If a driver is already specified (postgresql+psycopg:// or similar), keep it
+    if "+" in raw.split(":", 1)[0]:
+        return raw
+    # Handle the common provider prefixes
+    if raw.startswith("postgresql://"):
+        return raw.replace("postgresql://", "postgresql+psycopg://", 1)
+    if raw.startswith("postgres://"):
+        return raw.replace("postgres://", "postgresql+psycopg://", 1)
+    return raw
+
+DATABASE_URL = _normalize_database_url(_raw_db)
 
 
 class Base(DeclarativeBase):
@@ -31,5 +57,14 @@ def get_db() -> Generator[Session, None, None]:
 
 def create_tables() -> None:
     from . import models  # noqa: F401
-
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception:
+        # In some environments a previous partial DDL operation can leave
+        # behind catalog entries that cause `create_all` to raise an
+        # IntegrityError (e.g. duplicate type names). For robustness in
+        # simple deployments we catch and log the error rather than crash
+        # the whole application. For real production systems use a proper
+        # migration system (Alembic) and careful initialization.
+        import logging
+        logging.exception("create_tables: non-fatal error while creating tables; continuing")

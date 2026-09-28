@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from typing import Annotated
+import os
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.exceptions import RequestValidationError
@@ -46,9 +47,18 @@ def create_app(*, initialize_database: bool = True) -> FastAPI:
         lifespan=lifespan,
     )
 
+    # Configure CORS origins via environment variable for deployment.
+    # Provide a sensible default for local dev.
+    cors_env = os.getenv("KINUFLOW_CORS_ORIGINS")
+    if cors_env:
+        # Expect a comma-separated list of allowed origins.
+        allow_origins = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+    else:
+        allow_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+        allow_origins=allow_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["*"],
