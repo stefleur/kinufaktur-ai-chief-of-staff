@@ -109,3 +109,85 @@ exist. Do not reconstruct fictional development history.
   npm emitted the previously seen deprecation/install-script notices; no test
   failure or dependency-version change occurred.
 - Human review of restructuring: pending. No commit, push, or deployment.
+
+### 2026-10-06 — Batch 3 lean DevOps
+
+- Human reported PR #4 merged and authorized Batch 3 only, with no commit, push,
+  PR creation, provider changes, production deployment, or later-batch work.
+- Fast-forwarded main to `fc6f9f7` and confirmed the foundation commit is contained
+  in main; created `feature/final-project-devops` from a clean baseline. The old
+  local feature branch was retained; no remote branch was deleted.
+- Audited actual Dockerfiles/Compose, Vite/client settings, lockfiles, CI/CD,
+  and documentation. Fixed Node 18 incompatibility, build-time frontend settings,
+  asset base, unlocked backend installation, and the malformed health command.
+- CI retains backend tests and frontend build, adds frontend tests, uses Node 22,
+  and exposes `workflow_call`; Pages requires successful reusable checks.
+  Backend deployment remains external; its manual gating step is documented.
+- `npm ci`, `npm run test:ci` (9 passed), default `npm run build`, `uv sync --locked`,
+  and `uv run pytest -q` (13 passed) succeeded. A second frontend build using
+  `VITE_API_BASE_URL=http://localhost:8000 VITE_BASE=/` succeeded; generated HTML
+  uses root assets and compiled JS targets the local backend rather than production.
+- Compose config validation, workflow YAML/dependency checks, documentation links,
+  and `git diff --check` passed. The revised GitHub workflows have not run remotely.
+- Docker daemon socket was absent: no images built, containers started, or local
+  HTTP request performed. Runtime container reproducibility is not claimed.
+- Read-only production frontend and `/tasks` requests returned HTTP 200; no task
+  bodies were saved, and no production data was created/modified. Neon configuration
+  and browser persistence were not verified.
+- Correction: an initial `npm ci` invocation used the repository root and failed
+  for lack of a root package lock; reran successfully from `final-project/frontend`.
+  No package or lockfile changed. Existing dependency warnings remain.
+- Human review of Batch 3 is pending. Changes remain unstaged/uncommitted.
+
+### 2026-10-06 — Batch 3 container verification follow-up
+
+- The human resent the same Batch 3 request. Preserved all existing work on
+  `feature/final-project-devops` rather than restarting or switching branches.
+- Docker was now available (server 29.8.0). Built both images and started the
+  existing Compose stack with `up --build -d`. All three services became healthy.
+- Local backend `/tasks`, frontend HTML, and served JS/CSS returned HTTP 200;
+  frontend HTML uses root assets and its JS embeds localhost:8000 rather than
+  the production API. No browser CRUD/restart persistence test was performed.
+- One frontend request ran before startup completed; subsequent sandbox local
+  requests were blocked despite healthy containers. Repeated after startup with
+  authorized network access and all required HTTP checks passed.
+- `down` stopped/removed the test containers/network without deleting the volume.
+  Updated README/testing/deployment evidence to supersede the prior runtime limitation.
+- Reran `npm ci`, frontend tests (9 passed), production build, `uv sync --locked`,
+  and full backend tests (13 passed). Dependency locks remained unchanged.
+- Docker's npm install reported four vulnerability advisories, including two
+  critical. Recorded them for security review without installing scanners or
+  changing dependencies in this batch. Existing deprecation warnings remain.
+- Backend provider gating and actual remote execution of the revised Pages
+  workflow remain unverified; no provider settings or production deployment changed.
+- No commit, push, PR, merge, or Batch 4 work. Human review remains pending.
+
+### 2026-10-06 — Batch 3 persistence and backend gate preparation
+
+- Human authorized the remaining local runtime/persistence check and safe backend
+  workflow preparation only. Preserved the existing branch and uncommitted work.
+- `up --build -d` succeeded; PostgreSQL, backend, and frontend were healthy.
+  Local frontend `/` and backend `/tasks` returned 200.
+- Created one unique synthetic local task (201), confirmed it in the list,
+  restarted only backend/frontend, and confirmed the exact record persisted.
+  Deleted it (200); its GET returned 404. Stopped with `down` without volume
+  deletion, confirmed no containers remained and `final-project_db_data` existed.
+  No runtime correction was required; no production data was modified.
+- Inspected the existing workflows, installed locked CLI source, and official
+  FastAPI Cloud token/CLI/application-directory/GitHub integration documentation.
+  Prepared a backend job requiring successful reusable CI and explicit owner
+  opt-in (`FASTAPI_CLOUD_DEPLOY_ENABLED=true`). Missing credentials stop it before
+  deployment. Default remains disabled; no deployment command was executed.
+- Exact secrets are `FASTAPI_CLOUD_TOKEN` and `FASTAPI_CLOUD_APP_ID` for the
+  existing app. The CLI uploads the repository root from the backend directory
+  with `uv run --locked fastapi deploy ../..`; the owner's Application Directory
+  must be `final-project/backend`. Existing provider auto-deploy must be
+  disconnected after the Actions path is verified to remove its CI bypass.
+- No provider settings or credentials were inspected or changed. Full backend
+  gating and remote workflow execution remain unverified. Human review pending.
+- No commit, push, PR, merge, production deployment, or Batch 4 work.
+- Final regression: 9 frontend tests and production build passed; 13 backend
+  tests passed with the same two dependency warnings. YAML/dependency assertions
+  and deployment-step shell syntax passed. With both credential variables unset,
+  the extracted step failed before invoking the CLI, as intended.
+  `git diff --check` passed; changes remain unstaged/uncommitted.

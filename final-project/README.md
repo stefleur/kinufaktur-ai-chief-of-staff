@@ -15,9 +15,11 @@ development and the application does not call an LLM.
 - **Containers:** frontend nginx, backend FastAPI, and PostgreSQL in
   [docker-compose.yml](docker-compose.yml).
 - **CI/CD:** repository-level [CI](../.github/workflows/ci.yml) runs backend tests
-  and a frontend build. The separate [deployment workflow](../.github/workflows/deploy.yml)
+  and frontend tests/build. The separate [deployment workflow](../.github/workflows/deploy.yml)
   publishes GitHub Pages; FastAPI Cloud's GitHub integration deploys the backend.
-  Deployment does not yet wait for CI; gating remains Batch 3 work.
+  Pages calls the same verification before publishing. Backend deployment remains
+  external and independently triggered. A backend Actions job is prepared but
+  disabled by default; see the deployment guide for the exact owner cutover.
 
 ```text
 GitHub Pages (React) -> FastAPI Cloud (API) -> Neon PostgreSQL
@@ -42,10 +44,11 @@ npm run dev
 
 Frontend: http://localhost:5173. API/Swagger: http://localhost:8000/docs.
 
-Existing Docker commands, from `final-project/`: `docker compose up --build -d`,
-`docker compose logs -f`, and `docker compose down`. Known Node/Vite,
-build-variable, and asset-base issues remain for Batch 3; Docker is not yet a
-verified clean-clone workflow. Avoid deleting volumes when checking persistence.
+Docker commands, from `final-project/`: `docker compose up --build -d`,
+`docker compose logs -f`, and `docker compose down`. Node 22 and explicit frontend
+build-time values target the local backend at the root asset path. Both images built and all three services became healthy; local API, HTML, and
+asset requests returned HTTP 200. Browser CRUD/persistence was not tested. Avoid
+deleting volumes when checking persistence; see [deployment.md](docs/deployment.md).
 
 ## Test and demonstrate
 
@@ -58,7 +61,8 @@ confirm persistence, delete it, and reload to confirm removal.
 
 ## Deployment and documentation
 
-Existing documented URLs (not reverified during this relocation):
+Read-only HTTP checks returned 200 for the frontend and backend `/tasks` on
+2026-10-06. Browser CRUD/persistence and provider settings were not reverified:
 
 - [Frontend](https://stefleur.github.io/kinufaktur-ai-chief-of-staff/)
 - [Backend Swagger](https://kinufaktur-ai-chief-of-staff-89a42968.fastapicloud.dev/docs)

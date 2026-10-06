@@ -58,11 +58,34 @@ nonzero on failure. Setup cleans rendered DOM and restores mocks between tests.
 
 ## CI status and manual checks
 
-The existing GitHub Actions CI runs `uv run pytest -q` and the frontend build.
-The frontend test command is ready for CI, but adding it and fixing CI's Node 18
-configuration are Batch 3 work. Batches 1/2 do not change CI or deployment.
+The revised GitHub Actions CI runs `uv run pytest -q`, frontend `npm ci`,
+`npm run test:ci`, and `npm run build` on Node 22. The Pages workflow calls this
+CI through `workflow_call` and requires successful checks before publication.
+These Batch 3 changes have been checked locally but have not run on GitHub yet.
 
 For a manual demo, create/edit/move a synthetic task, reload to confirm
 persistence, delete it, and reload to confirm removal. Production verification
-is described in [deployment.md](deployment.md). Docker checks, deployment
-proof, gating, and a final clean-clone audit are deferred to later batches.
+is described in [deployment.md](deployment.md).
+
+On 2026-10-06, the existing Compose stack built successfully and all three
+services were healthy. Local frontend `/` and backend `/tasks` returned HTTP 200.
+One uniquely named synthetic local task was created (201) and returned by the
+list endpoint. After `docker compose -f final-project/docker-compose.yml restart
+backend frontend`, its exact record survived in the list (200). Cleanup deleted
+only that task (200), followed by its GET returning 404. `down` stopped the stack;
+`ps -a` was empty and the named PostgreSQL volume remained. No runtime fix was
+needed. This verifies local API restart persistence; browser CRUD and production
+Neon persistence were not tested.
+
+The backend Actions job is prepared with `needs: checks` and defaults to disabled
+until the owner supplies its secrets and opt-in variable. Full backend gating
+still requires the external provider cutover in [deployment.md](deployment.md).
+The revised workflows have not run remotely; the final clean-clone audit remains
+later work.
+
+Final regression after backend gate preparation: `npm run test:ci` passed all 9
+frontend tests, `npm run build` passed (Vite 7.3.6), and `uv run pytest -q` passed
+all 13 backend tests with two existing dependency deprecation warnings. Workflow
+YAML parsed and both deploy jobs require `checks`; shell syntax passed. Running
+the extracted backend deployment step without either credential exited 1 before
+invoking the CLI. `git diff --check` passed. Changes remain uncommitted.

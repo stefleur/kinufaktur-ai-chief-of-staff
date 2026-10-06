@@ -1,10 +1,14 @@
-FROM node:18-alpine as build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 COPY src ./src
 COPY index.html ./
 COPY vite.config.js ./
 RUN npm ci
+ARG VITE_API_BASE_URL=http://localhost:8000
+ARG VITE_BASE=/
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_BASE=${VITE_BASE}
 RUN npm run build
 
 FROM nginx:stable-alpine

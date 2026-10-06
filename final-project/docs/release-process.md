@@ -1,16 +1,31 @@
-# Release process
+# KinuFlow release process
 
-Production and staging are not currently separate environments. Changes merged into `main` are released to the production services.
+The foundation was merged through [PR #4](https://github.com/stefleur/kinufaktur-ai-chief-of-staff/pull/4).
+Use the normal flow: feature branch -> pull request -> CI -> review -> merge to
+main -> deployment. There is one production environment, with synthetic data.
 
 ## Release steps
 
-1. Develop and test the change locally.
-2. Push the change to GitHub.
-3. Confirm that GitHub CI in [repository CI workflow](../../.github/workflows/ci.yml) passes.
-4. When the change reaches `main`, [repository deployment workflow](../../.github/workflows/deploy.yml) automatically deploys the frontend to GitHub Pages.
-5. FastAPI Cloud's GitHub integration automatically redeploys backend changes from GitHub.
-6. After deployment, verify the production frontend and backend. Check `GET /tasks`, create a task in the frontend, reload the page, and confirm that the task persists.
+1. Implement and verify on a feature branch; review the diff and configuration.
+2. Push/open a PR only when authorized. PR CI runs backend tests and frontend
+   tests/build; require passing checks and human review before merging.
+3. After an authorized merge to main, the Pages workflow calls CI and publishes
+   the frontend only if those checks pass. It retains the existing site/variables.
+4. FastAPI Cloud independently deploys from its GitHub integration. Its settings
+   are external; backend deployment is not yet fully gated by repository CI.
+   A prepared Actions job requires CI and owner opt-in but defaults to disabled. See the
+   [remaining provider step](deployment.md#external-fastapi-cloud-deployment-and-remaining-manual-step).
+5. Check deployed URLs and complete the synthetic CRUD/persistence smoke test
+   described in [deployment.md](deployment.md).
+
+Batch 3 changes remain uncommitted for review. No commit, push, PR, merge, or
+production deployment was performed by this batch. The revised Pages gate needs
+an actual GitHub run after delivery; static inspection is not deployment proof.
 
 ## Rollback
 
-If a release causes a problem, revert the problematic Git commit and push the revert. The normal deployment integrations will deploy the reverted state. Verify both the frontend and backend after the rollback completes.
+After review/authorization, revert the problematic commit through a PR. Passing
+checks and merge trigger the normal Pages deployment; FastAPI Cloud follows its
+external trigger until the documented owner cutover; afterward the enabled
+backend Actions job requires passing CI. Verify both services afterward. No database schema changes are
+part of this batch; reverting application code is not a database restore.
