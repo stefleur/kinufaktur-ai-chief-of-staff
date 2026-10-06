@@ -191,3 +191,26 @@ exist. Do not reconstruct fictional development history.
   and deployment-step shell syntax passed. With both credential variables unset,
   the extracted step failed before invoking the CLI, as intended.
   `git diff --check` passed; changes remain unstaged/uncommitted.
+
+### 2026-10-06 — PostgreSQL stale connection fix
+
+- Human reported psycopg's SSL connection closed unexpectedly during task listing
+  after successful production connections. Inspected the existing engine factory,
+  request sessions, and task store; PostgreSQL pooled connections had no checkout
+  liveness check. Stale pooled reuse is consistent with the failure; the upstream
+  reason for closure and whether it happened before or during the query are not
+  established by the supplied traceback.
+- Enabled SQLAlchemy `pool_pre_ping` only for PostgreSQL in the existing engine
+  factory. SQLite thread handling and disabled pre-ping remain unchanged. No
+  schema, API, frontend, dependency, or deployment architecture change.
+- Full backend suite: 13 passed. Separate integration selection: 1 passed,
+  12 deselected. Both reported the same two dependency deprecation warnings.
+  Existing integration tests use SQLite, not a live PostgreSQL server.
+- Local no-network engine checks confirmed pre-ping for all three supported
+  PostgreSQL URL forms and disabled pre-ping plus a successful query for SQLite.
+  No additional configuration-only test was added. Production disconnection was
+  not reproduced; no credentials or provider settings were accessed.
+- SQLAlchemy pre-ping replaces connections already stale at checkout. It does
+  not retry an interrupted transaction or resolve a database outage.
+- `git diff --check` passed. Only database.py and this required development
+  evidence record changed. Human review pending; no commit, push, or deployment.
