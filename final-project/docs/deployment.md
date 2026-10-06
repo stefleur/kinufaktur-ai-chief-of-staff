@@ -23,11 +23,11 @@ Passwords and database connection strings must not be committed to the repositor
 
 ## Deployment automation
 
-Frontend deployment happens automatically from `main` through GitHub Actions using `.github/workflows/deploy.yml`. The workflow builds the Vite frontend and publishes it to GitHub Pages.
+Frontend deployment happens automatically from `main` through GitHub Actions using [repository deployment workflow](../../.github/workflows/deploy.yml). The workflow builds the Vite frontend and publishes it to GitHub Pages.
 
 Backend deployment happens automatically through FastAPI Cloud's GitHub integration. Backend changes pushed to the connected GitHub repository are redeployed by FastAPI Cloud.
 
-Continuous integration runs through `.github/workflows/ci.yml`.
+Continuous integration runs through [repository CI workflow](../../.github/workflows/ci.yml).
 
 ## Production smoke test
 
@@ -45,3 +45,16 @@ After a deployment:
 ## Known database migration limitation
 
 The current application uses SQLAlchemy table creation rather than a formal Alembic migration workflow. Production schema migrations are therefore a known limitation and a future improvement.
+
+## Directory relocation before Batch 3
+
+The canonical backend is now `final-project/backend/`; the frontend is
+`final-project/frontend/`. GitHub Actions path references were updated only to
+preserve existing behavior. Node 18, missing frontend tests in CI, and independent
+deployment triggers remain unchanged pending Batch 3.
+
+Before any future release, inspect the existing FastAPI Cloud app's root/application
+directory and update an old `homework2/backend` setting to `final-project/backend`
+if present. Provider settings were not changed and nothing was deployed during
+relocation. Existing production URLs and Neon configuration remain unchanged.
+The documented production URLs have not been reverified in this task.

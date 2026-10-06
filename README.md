@@ -1,41 +1,11 @@
-# Kinufaktur AI Chief of Staff
+# AI Dev Tools Zoomcamp 2026 coursework
 
-Homework project for the DataTalksClub AI Dev Tools Zoomcamp 2026.
+- **[final-project/](final-project/README.md)** is the canonical Final Project:
+  KinuFlow, a React/FastAPI Kanban board. Its frontend, backend, API contract,
+  tests, and documentation live together there.
+- Root `config/`, `requests_app/`, `manage.py`, Python dependencies, and `_docs/`
+  are preserved historical Django coursework, outside the Final Project.
+- KinuFlow originated as Homework 2; its application was moved into
+  `final-project/` without retaining a second maintained copy.
 
-The goal is to build an AI-powered internal assistant for Kinufaktur that helps organize business requests, classify them, and turn them into actionable work.
-
-## Current MVP
-
-The Django application supports:
-
-- creating business requests;
-- classifying requests as AI Automation, Data / Single Source of Truth, or Other;
-- adding an action plan;
-- moving requests through New, Reviewed, Planned, and Done;
-- viewing all requests and individual request details.
-
-## Local development
-
-Install the locked dependencies:
-
-```bash
-uv sync
-```
-
-Apply database migrations:
-
-```bash
-uv run python manage.py migrate
-```
-
-Start the development server:
-
-```bash
-uv run python manage.py runserver
-```
-
-Run the test suite:
-
-```bash
-uv run python manage.py test
-```
+Start with the [Final Project README](final-project/README.md).

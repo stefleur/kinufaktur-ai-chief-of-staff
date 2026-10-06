@@ -25,11 +25,11 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        working-directory: homework2/frontend
+        working-directory: final-project/frontend
         run: npm ci
 
       - name: Build frontend
-        working-directory: homework2/frontend
+        working-directory: final-project/frontend
         env:
           # Provide VITE_API_BASE from repository variables or secrets.
           VITE_API_BASE: ${{ vars.VITE_API_BASE }}
@@ -43,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: homework2/frontend/dist
+          path: final-project/frontend/dist
 
       - name: Deploy to GitHub Pages
         id: deployment

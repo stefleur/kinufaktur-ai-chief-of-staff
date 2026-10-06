@@ -6,8 +6,8 @@ Production and staging are not currently separate environments. Changes merged i
 
 1. Develop and test the change locally.
 2. Push the change to GitHub.
-3. Confirm that GitHub CI in `.github/workflows/ci.yml` passes.
-4. When the change reaches `main`, `.github/workflows/deploy.yml` automatically deploys the frontend to GitHub Pages.
+3. Confirm that GitHub CI in [repository CI workflow](../../.github/workflows/ci.yml) passes.
+4. When the change reaches `main`, [repository deployment workflow](../../.github/workflows/deploy.yml) automatically deploys the frontend to GitHub Pages.
 5. FastAPI Cloud's GitHub integration automatically redeploys backend changes from GitHub.
 6. After deployment, verify the production frontend and backend. Check `GET /tasks`, create a task in the frontend, reload the page, and confirm that the task persists.
 
