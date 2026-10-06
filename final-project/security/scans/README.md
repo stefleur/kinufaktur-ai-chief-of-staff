@@ -2,7 +2,7 @@
 
 ## Run identity
 
-- Source revision: `496b7c6bfbb59b55ea091abd854715e857942c82` plus the non-ignored Final Project worktree files present when the scan ran. Package 2 is not committed.
+- Source revision: `34cb0d9460ba831b29b87f6eb867844bf73daea5` plus the non-ignored Final Project worktree files present when the final audit scan ran. The tracked documentation changes were local and uncommitted; generated JSON reports are excluded from the scan input.
 - Gitleaks: `8.30.1`
 - Bandit: `1.9.4`
 - Command: `bash final-project/security/run-scans.sh`

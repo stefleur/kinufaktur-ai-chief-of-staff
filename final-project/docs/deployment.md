@@ -10,8 +10,10 @@ GitHub Pages frontend -> FastAPI Cloud backend -> Neon PostgreSQL
 - [Backend](https://kinufaktur-ai-chief-of-staff-89a42968.fastapicloud.dev)
 - [Backend Swagger](https://kinufaktur-ai-chief-of-staff-89a42968.fastapicloud.dev/docs)
 
-The existing providers, URLs, secrets, and database schema are preserved. Batch 3
-changes are local and uncommitted; no production deployment was requested.
+The existing providers, URLs, secrets, and database schema are preserved. The
+final-completion feature branch contains local commits for the Agent Extension
+Pack and security/operations evidence; it has not been pushed or submitted as a
+PR. No production deployment was performed for those changes.
 
 ## Local development
 
@@ -95,8 +97,8 @@ build/deploy job requires `checks` to succeed; a failed check skips deployment.
 It checks out the same event commit, preserves the existing repository variables,
 and publishes the existing GitHub Pages site. PR checks do not deploy.
 This simple reuse reruns verification on main rather than introducing a new
-release platform. The changed workflow has not yet run on GitHub because it has
-not been committed or pushed.
+release platform. The current feature-branch commits have not run on GitHub
+because this branch has not been pushed. The workflow files are checked in.
 
 ## External FastAPI Cloud deployment and remaining manual step
 

@@ -220,8 +220,9 @@ exist. Do not reconstruct fictional development history.
 - Human authorized the Agent Extension Pack checkpoint and subsequent Package 2
   security, audit, and ops evidence on `feature/final-project-completion`.
 - Created local checkpoint commit `496b7c6bfbb59b55ea091abd854715e857942c82`
-  containing only the ten Extension Pack files. No push occurred. Package 2
-  remains uncommitted and is limited to security/ops evidence and documentation.
+  containing only the ten Extension Pack files, followed by Package 2 commit
+  `34cb0d9460ba831b29b87f6eb867844bf73daea5`. Both commits remain local; no push
+  or PR occurred.
 - Extension Pack verification: MCP stdio initialization, sole-tool registration,
   all three allowed context reads, invalid-section rejection, and staged-path
   guardrail tests passed (10 total tests).
@@ -229,18 +230,50 @@ exist. Do not reconstruct fictional development history.
   with redaction enabled: zero findings. Bandit 1.9.4 analyzed 628 Python LOC:
   58 low-severity findings (54 B101 in tests, two B404, one B603, one B607),
   zero medium/high. Reports and pending human disposition are in `security/`.
-- The delegated local diff audit identified unresolved MCP symlink traversal:
-  `read_text()` follows a symlink at one of the fixed mapped filenames. This
-  requires a separately authorized Extension Pack code/test change and was not
-  modified in Package 2. The audit is explicitly not a final PR audit. Earlier
-  batch-status statements in this file are historical; current authorization
-  came from the human request for this task.
+- The delegated local diff audit identified MCP symlink traversal because
+  `read_text()` followed a symlink at a fixed mapped filename. Before Package 2
+  was committed, the server was changed to reject symlinks and verify resolved
+  containment; a regression test verifies an outside target is rejected. The
+  audit is explicitly not a final PR audit. Earlier batch-status statements in
+  this file describe their historical point in time.
 - Existing local Compose stack built and started. `/tasks` returned 200 before
   the exercise, 500 with only PostgreSQL stopped (`OperationalError` symptom),
   and 200 after PostgreSQL health recovered. All three services were stopped;
   the database volume was retained and `down -v` was not used. Sanitized evidence
   is in `ops/diagnostics/database-outage.md`.
-- Final extension-pack test rerun: 10 passed. `git diff --check` passed. No
-  frontend/backend application, database, Docker, CI/CD, deployment, OpenAPI,
-  or product behavior was changed. Package 2 human review is pending; no commit,
-  push, PR, or deployment was performed.
+- Final extension-pack test rerun at Package 2 completion: 11 passed.
+  `git diff --check` passed. No frontend/backend application, database, Docker,
+  CI/CD, deployment, OpenAPI, or product behavior was changed. The human approved
+  Package 2 before its local commit. No push, PR, or deployment was performed.
+
+### 2026-10-06 — Final clean-clone audit
+
+- Recovery started only from the trusted clean clone at
+  `/Users/kw/Desktop/datatalksclub/ai_devtool_zoomcamp/agent1-clean`, with `main`
+  at `f9aa386` and a clean worktree. The separate old working directory and
+  aborted experiment were not inspected or copied from.
+- Created `feature/final-project-completion`, implemented the approved Extension
+  Pack and Package 2 in separate local commits, and verified branch history.
+  This records recovery using the trusted baseline; it does not claim recovery
+  of files or state from the aborted work.
+- Reproducibility review corrected stale branch-status statements and added
+  clone, extension-test, and security-scan instructions. Changes are
+  documentation-only; the final verification also refreshed the Bandit JSON
+  report for the current source snapshot.
+- Final verification: backend `uv sync --locked --group dev` passed (55 resolved,
+  51 checked); backend full suite 13 passed and integration selection 1 passed,
+  each with two existing Starlette/httpx and AnyIO deprecation warnings.
+  Frontend `npm ci` passed, `npm run test:ci` passed 9 tests, and `npm run build`
+  passed (Vite 7.3.6). `npm ci` reported four dependency audit advisories (one
+  moderate, one high, two critical) and install-script notices; no dependency
+  changes were made. Extension Pack tests passed (11). Gitleaks 8.30.1 reported
+  zero findings; Bandit 1.9.4 reported 58 low findings and zero medium/high over
+  659 LOC. Docker Compose configuration validation and `git diff --check` passed.
+- The feature branch remains local and unpushed, so GitHub Actions has not run
+  for these commits. The external FastAPI Cloud provider cutover is not verified;
+  no production settings were accessed and no deployment occurred.
+- Human rejected the earlier over-broad AI proposal (runtime AI, authentication,
+  migrations, PostgreSQL test infrastructure, browser E2E, and enterprise
+  observability). Project instructions, specialist boundaries, and human
+  approval gates remain documented. Approval of the two local commits does not
+  authorize push, PR creation, merge, or deployment.
