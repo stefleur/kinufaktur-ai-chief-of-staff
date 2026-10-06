@@ -43,7 +43,12 @@ def create_database_engine(database_url: str) -> Engine:
     connect_args = (
         {"check_same_thread": False} if database_url.startswith("sqlite") else {}
     )
-    return create_engine(database_url, connect_args=connect_args)
+    return create_engine(
+        database_url,
+        connect_args=connect_args,
+        # Replace stale PostgreSQL connections before a request uses them.
+        pool_pre_ping=database_url.startswith("postgresql"),
+    )
 
 
 engine = create_database_engine(DATABASE_URL)
