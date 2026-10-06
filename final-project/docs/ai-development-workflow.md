@@ -214,3 +214,33 @@ exist. Do not reconstruct fictional development history.
   not retry an interrupted transaction or resolve a database outage.
 - `git diff --check` passed. Only database.py and this required development
   evidence record changed. Human review pending; no commit, push, or deployment.
+
+### 2026-10-06 — Agent Extension Pack checkpoint and Package 2 evidence
+
+- Human authorized the Agent Extension Pack checkpoint and subsequent Package 2
+  security, audit, and ops evidence on `feature/final-project-completion`.
+- Created local checkpoint commit `496b7c6bfbb59b55ea091abd854715e857942c82`
+  containing only the ten Extension Pack files. No push occurred. Package 2
+  remains uncommitted and is limited to security/ops evidence and documentation.
+- Extension Pack verification: MCP stdio initialization, sole-tool registration,
+  all three allowed context reads, invalid-section rejection, and staged-path
+  guardrail tests passed (10 total tests).
+- Gitleaks 8.30.1 scanned the current non-ignored Final Project source snapshot
+  with redaction enabled: zero findings. Bandit 1.9.4 analyzed 628 Python LOC:
+  58 low-severity findings (54 B101 in tests, two B404, one B603, one B607),
+  zero medium/high. Reports and pending human disposition are in `security/`.
+- The delegated local diff audit identified unresolved MCP symlink traversal:
+  `read_text()` follows a symlink at one of the fixed mapped filenames. This
+  requires a separately authorized Extension Pack code/test change and was not
+  modified in Package 2. The audit is explicitly not a final PR audit. Earlier
+  batch-status statements in this file are historical; current authorization
+  came from the human request for this task.
+- Existing local Compose stack built and started. `/tasks` returned 200 before
+  the exercise, 500 with only PostgreSQL stopped (`OperationalError` symptom),
+  and 200 after PostgreSQL health recovered. All three services were stopped;
+  the database volume was retained and `down -v` was not used. Sanitized evidence
+  is in `ops/diagnostics/database-outage.md`.
+- Final extension-pack test rerun: 10 passed. `git diff --check` passed. No
+  frontend/backend application, database, Docker, CI/CD, deployment, OpenAPI,
+  or product behavior was changed. Package 2 human review is pending; no commit,
+  push, PR, or deployment was performed.
