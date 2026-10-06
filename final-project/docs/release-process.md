@@ -18,9 +18,10 @@ main -> deployment. There is one production environment, with synthetic data.
 5. Check deployed URLs and complete the synthetic CRUD/persistence smoke test
    described in [deployment.md](deployment.md).
 
-Batch 3 changes remain uncommitted for review. No commit, push, PR, merge, or
-production deployment was performed by this batch. The revised Pages gate needs
-an actual GitHub run after delivery; static inspection is not deployment proof.
+The final-completion branch contains local commits for the Agent Extension Pack
+and security/operations evidence. It has not been pushed, opened as a PR, merged,
+or deployed. Its workflows therefore have not run on GitHub; static inspection
+and local verification are not proof of a remote CI or deployment run.
 
 ## Rollback
 

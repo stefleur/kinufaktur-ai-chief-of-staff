@@ -6,6 +6,17 @@ moving, and deleting tasks with title, description, category, and priority.
 Saved changes persist after reload. Use synthetic/demo data only; AI assists
 development and the application does not call an LLM.
 
+## Clone and prerequisites
+
+```bash
+git clone https://github.com/stefleur/kinufaktur-ai-chief-of-staff.git
+cd kinufaktur-ai-chief-of-staff
+```
+
+For local development, install Python 3.11+, `uv`, Node.js 20.19+ or 22.12+,
+and Docker with the Compose plugin. The security scan runner additionally
+requires Gitleaks 8.30.1 and Bandit 1.9.4. Use synthetic/demo data only.
+
 ## Architecture and technologies
 
 - **Frontend:** React/Vite; HTTP calls centralized in `frontend/src/api/tasksApi.js`.
@@ -76,6 +87,9 @@ Read-only HTTP checks returned 200 for the frontend and backend `/tasks` on
 - [Release process](docs/release-process.md)
 - [Verbatim draft rubric](docs/final-project-rubric.md)
 
-The future agent extension directories (`agent-capabilities/`, `agent-hooks/`,
-`custom-agent/`, `mcp-server/`) belong here in Batch 4. `security/` and `ops/`
-belong here in Batch 5. They are not created until real artifacts exist.
+The [Agent Extension Pack](docs/agent-extension-pack.md) and its workflow,
+specialist, MCP server, and guardrail are present. Security scan reports and
+policy are documented under [security/](security/scans/README.md); local
+operational guidance and outage evidence are under [ops/](ops/runbook.md).
+The extension-pack and security/operations evidence are committed locally on
+the feature branch; that branch has not been pushed or submitted as a PR.
