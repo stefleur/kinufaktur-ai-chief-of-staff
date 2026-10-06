@@ -7,5 +7,5 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.js"],
   },
-  base: "/kinufaktur-ai-chief-of-staff/",
+  base: process.env.VITE_BASE || "/kinufaktur-ai-chief-of-staff/",
 });
