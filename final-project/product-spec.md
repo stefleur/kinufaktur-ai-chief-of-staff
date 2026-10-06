@@ -87,11 +87,12 @@ The frontend should be a modern web application.
 
 All backend calls must be centralized in one API client module.
 
-For the first prototype, the API client should use mock data.
+The current frontend uses HTTP through `frontend/src/api/tasksApi.js`. The original
+prototype used mock data; that development stage is complete.
 
 ## Backend
 
-The backend will use FastAPI.
+The backend uses FastAPI and Pydantic validation, following `openapi.yaml`.
 
 It should provide REST endpoints for:
 
@@ -103,13 +104,13 @@ It should provide REST endpoints for:
 
 ## Database
 
-The first backend version should use a mock data store.
-
-Later it will be replaced with SQLAlchemy and a real database.
+The current backend uses SQLAlchemy behind a separate data-access layer. SQLite
+is available for local development and isolated tests; Docker Compose and
+production use PostgreSQL. Production is hosted on Neon.
 
 ## Out of Scope
 
-Do not implement in the first version:
+The approved lean Final Project excludes:
 
 - Authentication
 - Multiple users
@@ -117,3 +118,14 @@ Do not implement in the first version:
 - Autonomous agents
 - CRM integrations
 - Email integrations
+
+## Final Project boundaries and acceptance
+
+Use synthetic/demo data only. Keep the existing task workflow; do not add
+accounts, multi-tenancy, payments, migrations, workers, queues, or new cloud
+services. AI assists development, not application runtime. The historical root
+Django application is outside this product.
+
+The final demo must view tasks, create a synthetic task, edit its fields, move
+its status, reload to confirm persistence, delete it, and reload to confirm
+removal. Production remains GitHub Pages -> FastAPI Cloud -> Neon PostgreSQL.
